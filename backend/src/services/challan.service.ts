@@ -69,17 +69,17 @@ export async function createChallan(customerId: string, items: { productId: stri
     throw createError("One or more products not found", 400);
   }
 
-  const productMap = new Map(products.map(p => [p.id, p]));
+  const productMap = new Map<string, any>(products.map((p: any) => [p.id, p]));
   let totalQuantity = 0;
 
-  const challanItems = items.map(item => {
+  const challanItems = items.map((item: { productId: string; quantity: number }) => {
     const product = productMap.get(item.productId);
     if (!product) throw createError("Product not found", 400);
     totalQuantity += item.quantity;
     return {
-      productId: product.id,
-      productName: product.productName,
-      sku: product.sku,
+      productId: product.id as string,
+      productName: product.productName as string,
+      sku: product.sku as string,
       unitPrice: product.unitPrice,
       quantity: item.quantity,
     };
@@ -202,17 +202,17 @@ export async function updateDraftChallan(
     throw createError("One or more products not found", 400);
   }
 
-  const productMap = new Map(products.map(p => [p.id, p]));
+  const productMap = new Map<string, any>(products.map((p: any) => [p.id, p]));
   let totalQuantity = 0;
 
-  const challanItems = items.map(item => {
+  const challanItems = items.map((item: { productId: string; quantity: number }) => {
     const product = productMap.get(item.productId);
     if (!product) throw createError("Product not found", 400);
     totalQuantity += item.quantity;
     return {
-      productId: product.id,
-      productName: product.productName,
-      sku: product.sku,
+      productId: product.id as string,
+      productName: product.productName as string,
+      sku: product.sku as string,
       unitPrice: product.unitPrice,
       quantity: item.quantity,
     };
