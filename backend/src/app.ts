@@ -21,15 +21,38 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        process.env.NODE_ENV !== "production"
+      ) {
         return callback(null, true);
       }
-      return callback(new Error("CORS policy does not allow this origin."));
+      return callback(null, true); // Permissive CORS for API access
     },
     credentials: true,
   })
 );
 app.use(express.json());
+
+// Root welcome route
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: "Nexus ERP Backend API is live and operational",
+    version: "1.0.0",
+    endpoints: {
+      health: "/api/health",
+      auth: "/api/auth",
+      customers: "/api/customers",
+      products: "/api/products",
+      stock: "/api/stock",
+      challans: "/api/challans",
+      invoices: "/api/invoices",
+    },
+  });
+});
 
 app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ success: true, message: "API is running" });
