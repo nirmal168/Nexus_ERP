@@ -35,3 +35,4 @@ npm run dev
 | WAREHOUSE | warehouse@fundsroom.com    | Warehouse@123 |
 | ACCOUNTS  | accounts@fundsroom.com     | Accounts@123  |
 # Nexus_ERP
+# Nexus_ERP
