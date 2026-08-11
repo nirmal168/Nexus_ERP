@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Package, Warehouse, FileText, WalletCards,
-  Settings, HelpCircle, LogOut, Plus, X, Menu
+  LayoutDashboard, Users, Warehouse, FileText, WalletCards,
+  HelpCircle, LogOut, Plus, X, Menu
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { PageLoader } from '../common/Loader';
