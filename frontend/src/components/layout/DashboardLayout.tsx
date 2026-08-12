@@ -10,7 +10,7 @@ import { PageLoader } from '../common/Loader';
 const navItems = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN','SALES','WAREHOUSE','ACCOUNTS'] },
   { name: 'Customers', path: '/customers', icon: Users, roles: ['ADMIN','SALES','ACCOUNTS'] },
-  { name: 'Inventory', path: '/inventory', icon: Warehouse, roles: ['ADMIN','WAREHOUSE','SALES','ACCOUNTS'] },
+  { name: 'Inventory', path: '/inventory', icon: Warehouse, roles: ['ADMIN','WAREHOUSE'] },
   { name: 'Sales', path: '/challans', icon: FileText, roles: ['ADMIN','SALES','ACCOUNTS'] },
   { name: 'Accounts', path: '/accounts', icon: WalletCards, roles: ['ADMIN','ACCOUNTS'] },
 ];
@@ -24,6 +24,12 @@ export function DashboardLayout() {
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   const filtered = navItems.filter(item => user && item.roles.includes(user.role));
+
+  const newEntryPath = user?.role === 'WAREHOUSE' 
+    ? '/products/new' 
+    : user?.role === 'SALES' || user?.role === 'ADMIN'
+      ? '/challans/new'
+      : null;
 
   return (
     <div className="nexus-app">
@@ -43,9 +49,11 @@ export function DashboardLayout() {
           <div className="nexus-portal-role">{user?.role === 'WAREHOUSE' ? 'Warehouse Admin' : `${user?.role || 'User'} Workspace`}</div>
         </div>
 
-        <Link to="/challans/new" className="nexus-new-entry" onClick={() => setSidebarOpen(false)}>
-          <Plus size={17}/> New Entry
-        </Link>
+        {newEntryPath && (
+          <Link to={newEntryPath} className="nexus-new-entry" onClick={() => setSidebarOpen(false)}>
+            <Plus size={17}/> New Entry
+          </Link>
+        )}
 
         <nav className="nexus-nav">
           {filtered.map(({name,path,icon:Icon}) => {

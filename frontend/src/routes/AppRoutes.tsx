@@ -29,18 +29,28 @@ export default function AppRoutes() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Customers: ADMIN, SALES, ACCOUNTS (Read-only for ACCOUNTS) */}
         <Route path="/customers" element={<Customers />} />
-        <Route path="/customers/new" element={<NewCustomer />} />
+        <Route path="/customers/new" element={<ProtectedRoute allowedRoles={['ADMIN', 'SALES']}><NewCustomer /></ProtectedRoute>} />
         <Route path="/customers/:id" element={<CustomerView />} />
-        <Route path="/customers/:id/edit" element={<CustomerEdit />} />
+        <Route path="/customers/:id/edit" element={<ProtectedRoute allowedRoles={['ADMIN', 'SALES']}><CustomerEdit /></ProtectedRoute>} />
+        
+        {/* Products: ADMIN, WAREHOUSE can create/edit; SALES, ACCOUNTS can view catalog */}
         <Route path="/products" element={<Products />} />
-        <Route path="/products/new" element={<NewProduct />} />
-        <Route path="/products/:id/edit" element={<EditProduct />} />
-        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/products/new" element={<ProtectedRoute allowedRoles={['ADMIN', 'WAREHOUSE']}><NewProduct /></ProtectedRoute>} />
+        <Route path="/products/:id/edit" element={<ProtectedRoute allowedRoles={['ADMIN', 'WAREHOUSE']}><EditProduct /></ProtectedRoute>} />
+        
+        {/* Inventory: ADMIN, WAREHOUSE only */}
+        <Route path="/inventory" element={<ProtectedRoute allowedRoles={['ADMIN', 'WAREHOUSE']}><Inventory /></ProtectedRoute>} />
+        
+        {/* Challans / Sales: ADMIN, SALES can create; ACCOUNTS can view */}
         <Route path="/challans" element={<Challans />} />
-        <Route path="/challans/new" element={<NewChallan />} />
+        <Route path="/challans/new" element={<ProtectedRoute allowedRoles={['ADMIN', 'SALES']}><NewChallan /></ProtectedRoute>} />
         <Route path="/challans/:id" element={<ChallanView />} />
-        <Route path="/accounts" element={<Accounts />} />
+        
+        {/* Accounts: ADMIN, ACCOUNTS */}
+        <Route path="/accounts" element={<ProtectedRoute allowedRoles={['ADMIN', 'ACCOUNTS']}><Accounts /></ProtectedRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
