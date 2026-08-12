@@ -5,6 +5,7 @@ import * as productService from "../services/product.service.js";
 import { uploadToS3, getFromS3 } from "../utils/s3.js";
 import prisma from "../config/db.js";
 import { createError } from "../middleware/error.middleware.js";
+import env from "../config/env.js";
 
 export async function list(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
