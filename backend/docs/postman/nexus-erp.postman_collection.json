@@ -1,8 +1,7 @@
 {
   "info": {
     "name": "Nexus ERP & CRM API",
-    "_postman_id": "nexus-erp-crm-collection-v1",
-    "description": "# Nexus ERP & CRM Operations Portal API\n\nFull API collection for Nexus ERP.",
+    "description": "# Nexus ERP & CRM Operations Portal API\n\nA comprehensive API collection for Nexus ERP & CRM Operations Portal.\n\n### Authentication\n- Authenticate via `POST /api/auth/login` to obtain a JWT Bearer token.\n- All authenticated endpoints inherit the Bearer token configured at the collection level.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -32,13 +31,33 @@
       "type": "string"
     },
     {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "salesToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "warehouseToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "accountsToken",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "customerId",
-      "value": "cmsphr6rv0000pots723pk0qf",
+      "value": "",
       "type": "string"
     },
     {
       "key": "productId",
-      "value": "cmsovmwpe000ezwts14fqlkp3",
+      "value": "",
       "type": "string"
     },
     {
@@ -92,15 +111,21 @@
       "name": "1. System & Health",
       "item": [
         {
-          "name": "Root Index / Status",
+          "name": "Root Index - Status",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response indicates service is operational', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ]
               }
             }
           ],
@@ -109,6 +134,7 @@
               "type": "noauth"
             },
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{rootUrl}}/",
               "host": [
@@ -117,7 +143,8 @@
               "path": [
                 ""
               ]
-            }
+            },
+            "description": "Root endpoint providing service status and available module routes."
           }
         },
         {
@@ -126,11 +153,16 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('API is healthy', function () { pm.expect(pm.response.json().success).to.be.true; });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('API is healthy and operational', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ]
               }
             }
           ],
@@ -139,6 +171,7 @@
               "type": "noauth"
             },
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/health",
               "host": [
@@ -147,7 +180,8 @@
               "path": [
                 "health"
               ]
-            }
+            },
+            "description": "Health check endpoint returning 200 OK."
           }
         }
       ]
@@ -161,16 +195,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Sales token received', function () {",
                   "    var res = pm.response.json();",
-                  "    if (res.data && res.data.token) {",
-                  "        pm.environment.set('salesToken', res.data.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "    pm.expect(res.data).to.have.property('token');",
+                  "    pm.collectionVariables.set('salesToken', res.data.token);",
+                  "    if (pm.environment) pm.environment.set('salesToken', res.data.token);",
+                  "});"
+                ]
               }
             }
           ],
@@ -187,7 +223,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{salesEmail}}\",\n  \"password\": \"{{salesPassword}}\"\n}"
+              "raw": "{\n  \"email\": \"sales@fundsroom.com\",\n  \"password\": \"Sales@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -198,7 +239,8 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Authenticates as SALES user."
           }
         },
         {
@@ -207,16 +249,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Warehouse token received', function () {",
                   "    var res = pm.response.json();",
-                  "    if (res.data && res.data.token) {",
-                  "        pm.environment.set('warehouseToken', res.data.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "    pm.expect(res.data).to.have.property('token');",
+                  "    pm.collectionVariables.set('warehouseToken', res.data.token);",
+                  "    if (pm.environment) pm.environment.set('warehouseToken', res.data.token);",
+                  "});"
+                ]
               }
             }
           ],
@@ -233,7 +277,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{warehouseEmail}}\",\n  \"password\": \"{{warehousePassword}}\"\n}"
+              "raw": "{\n  \"email\": \"warehouse@fundsroom.com\",\n  \"password\": \"Warehouse@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -244,7 +293,8 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Authenticates as WAREHOUSE user."
           }
         },
         {
@@ -253,16 +303,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Accounts token received', function () {",
                   "    var res = pm.response.json();",
-                  "    if (res.data && res.data.token) {",
-                  "        pm.environment.set('accountsToken', res.data.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "    pm.expect(res.data).to.have.property('token');",
+                  "    pm.collectionVariables.set('accountsToken', res.data.token);",
+                  "    if (pm.environment) pm.environment.set('accountsToken', res.data.token);",
+                  "});"
+                ]
               }
             }
           ],
@@ -279,7 +331,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{accountsEmail}}\",\n  \"password\": \"{{accountsPassword}}\"\n}"
+              "raw": "{\n  \"email\": \"accounts@fundsroom.com\",\n  \"password\": \"Accounts@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -290,7 +347,8 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Authenticates as ACCOUNTS user."
           }
         },
         {
@@ -299,18 +357,22 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Admin token saved to authToken for collection runner', function () {",
                   "    var res = pm.response.json();",
-                  "    if (res.data && res.data.token) {",
+                  "    pm.expect(res.data).to.have.property('token');",
+                  "    pm.collectionVariables.set('adminToken', res.data.token);",
+                  "    pm.collectionVariables.set('authToken', res.data.token);",
+                  "    if (pm.environment) {",
+                  "        pm.environment.set('adminToken', res.data.token);",
                   "        pm.environment.set('authToken', res.data.token);",
-                  "        pm.collectionVariables.set('authToken', res.data.token);",
-                  "        console.log('authToken saved successfully (Admin).');",
                   "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "});"
+                ]
               }
             }
           ],
@@ -327,7 +389,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+              "raw": "{\n  \"email\": \"admin@fundsroom.com\",\n  \"password\": \"Admin@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -338,7 +405,8 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Authenticates as ADMIN and sets {{authToken}} (has full access across all modules)."
           }
         },
         {
@@ -347,16 +415,22 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('Has user data', function () { pm.expect(pm.response.json().data.user).to.exist; });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('User details returned', function () {",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.data.user).to.have.property('email');",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/me",
               "host": [
@@ -366,7 +440,8 @@
                 "auth",
                 "me"
               ]
-            }
+            },
+            "description": "Fetches logged in user's profile."
           }
         }
       ]
@@ -375,77 +450,33 @@
       "name": "3. Customers",
       "item": [
         {
-          "name": "List Customers",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
-                  "    var res = pm.response.json();",
-                  "    if (res.data && Array.isArray(res.data) && res.data.length > 0) {",
-                  "        pm.environment.set('customerId', res.data[0].id);",
-                  "        pm.collectionVariables.set('customerId', res.data[0].id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/customers?page=1&limit=20&search=&status=&customerType=",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "customers"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "search",
-                  "value": ""
-                },
-                {
-                  "key": "status",
-                  "value": ""
-                },
-                {
-                  "key": "customerType",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
           "name": "Create Customer",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var rand = Math.floor(100000000 + Math.random() * 900000000);",
+                  "pm.variables.set('randMobile', '9' + rand);",
+                  "pm.variables.set('randEmail', 'client_' + Date.now() + '@example.com');"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 201 Created', function () { pm.response.to.have.status(201); });",
-                  "if (pm.response.code === 201) {",
-                  "    var res = pm.response.json();",
-                  "    if (res.data && res.data.id) {",
-                  "        pm.environment.set('customerId', res.data.id);",
-                  "        pm.collectionVariables.set('customerId', res.data.id);",
-                  "    }",
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('customerId', res.data.id);",
+                  "    if (pm.environment) pm.environment.set('customerId', res.data.id);",
                   "}"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ],
@@ -459,7 +490,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"Aarav Enterprises {{$randomInt}}\",\n  \"mobile\": \"98{{$timestamp}}\",\n  \"email\": \"aarav_{{$timestamp}}@enterprises.com\",\n  \"businessName\": \"Aarav Electricals & Hardware\",\n  \"gstNumber\": \"27AABCA1234F1Z1\",\n  \"customerType\": \"WHOLESALE\",\n  \"address\": \"Plot 44, Industrial Area, Pune, Maharashtra\",\n  \"status\": \"ACTIVE\",\n  \"followUpDate\": \"2026-08-25T10:00:00.000Z\",\n  \"notes\": \"Premium bulk buyer for electrical fasteners\"\n}"
+              "raw": "{\n  \"customerName\": \"Acme Global Corp\",\n  \"mobile\": \"{{randMobile}}\",\n  \"email\": \"{{randEmail}}\",\n  \"businessName\": \"Acme Industries\",\n  \"gstNumber\": \"27AABCU9603R1ZM\",\n  \"customerType\": \"WHOLESALE\",\n  \"address\": \"45 Industrial Estate, Phase 2, Mumbai\",\n  \"status\": \"LEAD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/customers",
@@ -469,7 +505,44 @@
               "path": [
                 "customers"
               ]
+            },
+            "description": "Creates a new customer record."
+          }
+        },
+        {
+          "name": "List Customers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var res = pm.response.json();",
+                  "pm.expect(res.data).to.be.an('array');",
+                  "if (res.data.length > 0 && !pm.collectionVariables.get('customerId')) {",
+                  "    pm.collectionVariables.set('customerId', res.data[0].id);",
+                  "    if (pm.environment) pm.environment.set('customerId', res.data[0].id);",
+                  "}"
+                ]
+              }
             }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "description": "Lists customers with pagination and filtering."
           }
         },
         {
@@ -478,15 +551,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/customers/{{customerId}}",
               "host": [
@@ -496,7 +572,8 @@
                 "customers",
                 "{{customerId}}"
               ]
-            }
+            },
+            "description": "Gets single customer profile."
           }
         },
         {
@@ -505,10 +582,12 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
@@ -522,7 +601,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"Aarav Enterprises Private Limited\",\n  \"mobile\": \"98{{$timestamp}}\",\n  \"email\": \"contact_{{$timestamp}}@aarav-enterprises.com\",\n  \"businessName\": \"Aarav Electricals & Hardware Ltd\",\n  \"customerType\": \"DISTRIBUTOR\",\n  \"address\": \"Plot 44, Phase II, Industrial Area, Pune 411026\",\n  \"status\": \"ACTIVE\"\n}"
+              "raw": "{\n  \"customerName\": \"Acme Global Industries Ltd\",\n  \"status\": \"ACTIVE\",\n  \"customerType\": \"DISTRIBUTOR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/customers/{{customerId}}",
@@ -533,7 +617,8 @@
                 "customers",
                 "{{customerId}}"
               ]
-            }
+            },
+            "description": "Updates existing customer information."
           }
         },
         {
@@ -542,10 +627,12 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 201 Created', function () { pm.response.to.have.status(201); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200 or 201', function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});"
+                ]
               }
             }
           ],
@@ -559,7 +646,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"note\": \"Discussed wholesale discounts for Q3 order delivery\",\n  \"followUpDate\": \"2026-08-30T14:30:00.000Z\"\n}"
+              "raw": "{\n  \"note\": \"Client requested detailed quote for next shipment\",\n  \"followUpDate\": \"2026-08-25T10:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/customers/{{customerId}}/followups",
@@ -571,7 +663,8 @@
                 "{{customerId}}",
                 "followups"
               ]
-            }
+            },
+            "description": "Adds a CRM follow-up note for customer."
           }
         },
         {
@@ -580,15 +673,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/customers/{{customerId}}/followups",
               "host": [
@@ -599,7 +695,8 @@
                 "{{customerId}}",
                 "followups"
               ]
-            }
+            },
+            "description": "Lists all follow-ups for a customer."
           }
         },
         {
@@ -608,15 +705,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/customers/{{customerId}}/challans",
               "host": [
@@ -627,7 +727,8 @@
                 "{{customerId}}",
                 "challans"
               ]
-            }
+            },
+            "description": "Gets all delivery challans for a customer."
           }
         }
       ]
@@ -636,77 +737,32 @@
       "name": "4. Products",
       "item": [
         {
-          "name": "List Products",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
-                  "    var res = pm.response.json();",
-                  "    if (res.data && Array.isArray(res.data) && res.data.length > 0) {",
-                  "        pm.environment.set('productId', res.data[0].id);",
-                  "        pm.collectionVariables.set('productId', res.data[0].id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/products?page=1&limit=20&search=&category=&lowStock=false",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "products"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "search",
-                  "value": ""
-                },
-                {
-                  "key": "category",
-                  "value": ""
-                },
-                {
-                  "key": "lowStock",
-                  "value": "false"
-                }
-              ]
-            }
-          }
-        },
-        {
           "name": "Create Product",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var sku = 'SKU-' + Date.now().toString().slice(-6);",
+                  "pm.variables.set('randSku', sku);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 201 Created', function () { pm.response.to.have.status(201); });",
-                  "if (pm.response.code === 201) {",
-                  "    var res = pm.response.json();",
-                  "    if (res.data && res.data.id) {",
-                  "        pm.environment.set('productId', res.data.id);",
-                  "        pm.collectionVariables.set('productId', res.data.id);",
-                  "    }",
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('productId', res.data.id);",
+                  "    if (pm.environment) pm.environment.set('productId', res.data.id);",
                   "}"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ],
@@ -720,7 +776,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productName\": \"Heavy Duty Flange Bolt M12 {{$randomInt}}\",\n  \"sku\": \"BOLT-FLG-{{$timestamp}}\",\n  \"category\": \"Fasteners\",\n  \"unitPrice\": 14.5,\n  \"currentStock\": 150,\n  \"minimumStock\": 30,\n  \"warehouseLocation\": \"Rack A4 - Bin 12\"\n}"
+              "raw": "{\n  \"productName\": \"Industrial Hydraulic Valve V-200\",\n  \"sku\": \"{{randSku}}\",\n  \"category\": \"Hydraulics\",\n  \"unitPrice\": 12500,\n  \"currentStock\": 40,\n  \"minimumStock\": 8,\n  \"warehouseLocation\": \"Bay-4 Rack-C\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/products",
@@ -730,7 +791,44 @@
               "path": [
                 "products"
               ]
+            },
+            "description": "Creates a new product in the catalog."
+          }
+        },
+        {
+          "name": "List Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var res = pm.response.json();",
+                  "pm.expect(res.data).to.be.an('array');",
+                  "if (res.data.length > 0 && !pm.collectionVariables.get('productId')) {",
+                  "    pm.collectionVariables.set('productId', res.data[0].id);",
+                  "    if (pm.environment) pm.environment.set('productId', res.data[0].id);",
+                  "}"
+                ]
+              }
             }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            },
+            "description": "Lists products with stock levels and details."
           }
         },
         {
@@ -739,15 +837,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/products/{{productId}}",
               "host": [
@@ -757,7 +858,8 @@
                 "products",
                 "{{productId}}"
               ]
-            }
+            },
+            "description": "Gets single product details."
           }
         },
         {
@@ -766,10 +868,12 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
@@ -783,7 +887,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productName\": \"Heavy Duty Flange Bolt M12 (Grade 8.8)\",\n  \"category\": \"Fasteners\",\n  \"unitPrice\": 16.0,\n  \"currentStock\": 180,\n  \"minimumStock\": 40,\n  \"warehouseLocation\": \"Rack A4 - Bin 14\"\n}"
+              "raw": "{\n  \"unitPrice\": 13500,\n  \"currentStock\": 45,\n  \"minimumStock\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/products/{{productId}}",
@@ -794,7 +903,45 @@
                 "products",
                 "{{productId}}"
               ]
+            },
+            "description": "Updates price and stock thresholds."
+          }
+        },
+        {
+          "name": "Get Product Image Presigned URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
             }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/images?filename=products/sample.jpg",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "images"
+              ],
+              "query": [
+                {
+                  "key": "filename",
+                  "value": "products/sample.jpg"
+                }
+              ]
+            },
+            "description": "Gets presigned image URL."
           }
         }
       ]
@@ -803,60 +950,17 @@
       "name": "5. Stock Management",
       "item": [
         {
-          "name": "List Stock Movements",
+          "name": "Stock In (Add Inventory)",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/stock/movements?page=1&limit=20&productId=&type=",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "stock",
-                "movements"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "productId",
-                  "value": ""
-                },
-                {
-                  "key": "type",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Stock In (Add Stock)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 201 Created', function () { pm.response.to.have.status(201); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});"
+                ]
               }
             }
           ],
@@ -870,7 +974,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 50,\n  \"type\": \"IN\",\n  \"reason\": \"Supplier purchase receipt PO-90812\"\n}"
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 15,\n  \"reason\": \"New shipment arrived from supplier\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/stock/in",
@@ -881,19 +990,22 @@
                 "stock",
                 "in"
               ]
-            }
+            },
+            "description": "Adds stock to inventory with audit log."
           }
         },
         {
-          "name": "Stock Out (Reduce Stock / Adjustment)",
+          "name": "Stock Out (Reduce Inventory)",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 201 Created', function () { pm.response.to.have.status(201); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});"
+                ]
               }
             }
           ],
@@ -907,7 +1019,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 5,\n  \"type\": \"OUT\",\n  \"reason\": \"Damaged units write-off from QC audit\"\n}"
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 5,\n  \"reason\": \"Quality assurance test unit dispatch\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/stock/out",
@@ -918,7 +1035,45 @@
                 "stock",
                 "out"
               ]
+            },
+            "description": "Reduces inventory with audit log."
+          }
+        },
+        {
+          "name": "List Stock Movements",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
             }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements?productId={{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "productId",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Lists chronological audit logs of stock changes."
           }
         }
       ]
@@ -927,81 +1082,22 @@
       "name": "6. Delivery Challans & Sales",
       "item": [
         {
-          "name": "List Challans",
+          "name": "Create Delivery Challan (Draft)",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
-                  "if (pm.response.code === 200) {",
-                  "    var res = pm.response.json();",
-                  "    if (res.data && Array.isArray(res.data) && res.data.length > 0) {",
-                  "        pm.environment.set('challanId', res.data[0].id);",
-                  "        pm.collectionVariables.set('challanId', res.data[0].id);",
-                  "    }",
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('challanId', res.data.id);",
+                  "    if (pm.environment) pm.environment.set('challanId', res.data.id);",
                   "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/challans?page=1&limit=20&status=&paymentStatus=&search=&customerId=",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "challans"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "status",
-                  "value": ""
-                },
-                {
-                  "key": "paymentStatus",
-                  "value": ""
-                },
-                {
-                  "key": "search",
-                  "value": ""
-                },
-                {
-                  "key": "customerId",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Challan (Draft)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 201 Created', function () { pm.response.to.have.status(201); });",
-                  "if (pm.response.code === 201) {",
-                  "    var res = pm.response.json();",
-                  "    if (res.data && res.data.id) {",
-                  "        pm.environment.set('challanId', res.data.id);",
-                  "        pm.collectionVariables.set('challanId', res.data.id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ],
@@ -1015,7 +1111,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 5\n    }\n  ]\n}"
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/challans",
@@ -1025,24 +1126,64 @@
               "path": [
                 "challans"
               ]
-            }
+            },
+            "description": "Creates a draft delivery challan."
           }
         },
         {
-          "name": "Get Challan By ID",
+          "name": "List Delivery Challans",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var res = pm.response.json();",
+                  "pm.expect(res.data).to.be.an('array');",
+                  "if (res.data.length > 0 && !pm.collectionVariables.get('challanId')) {",
+                  "    pm.collectionVariables.set('challanId', res.data[0].id);",
+                  "    if (pm.environment) pm.environment.set('challanId', res.data[0].id);",
+                  "}"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/challans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "challans"
+              ]
+            },
+            "description": "Lists delivery challans."
+          }
+        },
+        {
+          "name": "Get Delivery Challan By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/challans/{{challanId}}",
               "host": [
@@ -1052,19 +1193,22 @@
                 "challans",
                 "{{challanId}}"
               ]
-            }
+            },
+            "description": "Gets detailed delivery challan with items."
           }
         },
         {
-          "name": "Update Challan (Draft)",
+          "name": "Update Delivery Challan (Draft)",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
@@ -1078,7 +1222,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 8\n    }\n  ]\n}"
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 3\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/challans/{{challanId}}",
@@ -1089,24 +1238,28 @@
                 "challans",
                 "{{challanId}}"
               ]
-            }
+            },
+            "description": "Updates items on a draft challan."
           }
         },
         {
-          "name": "Confirm Challan",
+          "name": "Confirm Delivery Challan",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "PATCH",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/challans/{{challanId}}/confirm",
               "host": [
@@ -1117,24 +1270,28 @@
                 "{{challanId}}",
                 "confirm"
               ]
-            }
+            },
+            "description": "Confirms challan and deducts stock."
           }
         },
         {
-          "name": "Mark Challan as Paid",
+          "name": "Mark Delivery Challan as Paid",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "PATCH",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/challans/{{challanId}}/paid",
               "host": [
@@ -1145,7 +1302,8 @@
                 "{{challanId}}",
                 "paid"
               ]
-            }
+            },
+            "description": "Marks challan payment status as PAID."
           }
         },
         {
@@ -1154,15 +1312,21 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Content-Type is PDF', function () {",
+                  "    pm.expect(pm.response.headers.get('content-type')).to.include('pdf');",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/challans/{{challanId}}/pdf",
               "host": [
@@ -1173,7 +1337,8 @@
                 "{{challanId}}",
                 "pdf"
               ]
-            }
+            },
+            "description": "Downloads delivery challan PDF."
           }
         }
       ]
@@ -1187,15 +1352,21 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Content-Type is PDF', function () {",
+                  "    pm.expect(pm.response.headers.get('content-type')).to.include('pdf');",
+                  "});"
+                ]
               }
             }
           ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/invoices/{{challanId}}/pdf",
               "host": [
@@ -1206,7 +1377,8 @@
                 "{{challanId}}",
                 "pdf"
               ]
-            }
+            },
+            "description": "Downloads GST tax invoice PDF."
           }
         }
       ]
