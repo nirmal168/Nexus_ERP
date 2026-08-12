@@ -1,0 +1,29 @@
+$kind: http-request
+description: "Create Delivery Challan (Draft)"
+url: "{{baseUrl}}/challans"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customerId": "{{customerId}}",
+      "items": [
+        {
+          "productId": "{{productId}}",
+          "quantity": 2
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 201 or 200", function () { pm.expect([200, 201]).to.include(pm.response.code); });
+      var res = pm.response.json();
+      if (res.data && res.data.id) {
+          pm.collectionVariables.set("challanId", res.data.id);
+          if (pm.environment) pm.environment.set("challanId", res.data.id);
+      }
+    language: text/javascript
+order: 1000

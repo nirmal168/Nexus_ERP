@@ -1,0 +1,36 @@
+$kind: http-request
+description: "Create Customer"
+url: "{{baseUrl}}/customers"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customerName": "Acme Global Corp",
+      "mobile": "{{randMobile}}",
+      "email": "{{randEmail}}",
+      "businessName": "Acme Industries",
+      "gstNumber": "27AABCU9603R1ZM",
+      "customerType": "WHOLESALE",
+      "address": "45 Industrial Estate, Phase 2, Mumbai",
+      "status": "LEAD"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      var rand = Math.floor(100000000 + Math.random() * 900000000);
+      pm.variables.set("randMobile", "9" + rand);
+      pm.variables.set("randEmail", "client_" + Date.now() + "@example.com");
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 201 or 200", function () { pm.expect([200, 201]).to.include(pm.response.code); });
+      var res = pm.response.json();
+      if (res.data && res.data.id) {
+          pm.collectionVariables.set("customerId", res.data.id);
+          if (pm.environment) pm.environment.set("customerId", res.data.id);
+      }
+    language: text/javascript
+order: 1000

@@ -1,0 +1,20 @@
+$kind: http-request
+description: "Update Product"
+url: "{{baseUrl}}/products/{{productId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "unitPrice": 13500,
+      "currentStock": 45,
+      "minimumStock": 10
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () { pm.response.to.have.status(200); });
+    language: text/javascript
+order: 4000

@@ -1,0 +1,15 @@
+# Use this workspace to collaborate
+workspace:
+  id: c330ce24-2753-47c8-861a-08330ed78385
+
+localResources:
+  collections: []
+  environments:
+    - ../postman/environments/Nexus ERP - Local Environment.environment.yaml
+    - ../postman/environments/Nexus ERP - Production Environment.environment.yaml
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/Nexus ERP & CRM API: 5e475d04-63cd-4646-93d7-d44525f27c3d

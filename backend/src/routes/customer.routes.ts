@@ -14,7 +14,9 @@ router.get("/:id", authorizeRoles("ADMIN", "SALES", "ACCOUNTS"), getById);
 router.put("/:id", authorizeRoles("ADMIN", "SALES"), validate(validateUpdateCustomer), update);
 router.delete("/:id", authorizeRoles("ADMIN", "SALES"), remove);
 router.post("/:id/followups", authorizeRoles("ADMIN", "SALES"), validate(validateFollowUp), createFollowUp);
+router.post("/:id/follow-ups", authorizeRoles("ADMIN", "SALES"), validate(validateFollowUp), createFollowUp);
 router.get("/:id/followups", authorizeRoles("ADMIN", "SALES", "ACCOUNTS"), listFollowUps);
+router.get("/:id/follow-ups", authorizeRoles("ADMIN", "SALES", "ACCOUNTS"), listFollowUps);
 router.get("/:id/challans", authorizeRoles("ADMIN", "SALES", "ACCOUNTS"), getCustomerChallansHandler);
 
 export default router;

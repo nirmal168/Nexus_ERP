@@ -1,0 +1,23 @@
+$kind: http-request
+description: "Login - Accounts User"
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "accounts@fundsroom.com",
+      "password": "Accounts@123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () { pm.response.to.have.status(200); });
+      var res = pm.response.json();
+      pm.collectionVariables.set("accountsToken", res.data.token);
+    language: text/javascript
+order: 3000

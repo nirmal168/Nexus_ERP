@@ -398,18 +398,12 @@ Example:
 
 ```env
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
+DATABASE_URL=your_postgres_database_url
 JWT_SECRET=your_secret_key
-CLIENT_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:5173
 ```
 
 ## 7. Start Backend
-
-```bash
-npm start
-```
-
-or, if the project uses a development script:
 
 ```bash
 npm run dev
@@ -417,48 +411,39 @@ npm run dev
 
 ---
 
+## 👥 User Roles & Default Credentials
+
+| Role      | Email                      | Password      | Description |
+|-----------|----------------------------|---------------|-------------|
+| **ADMIN**     | `admin@fundsroom.com`        | `Admin@123`     | Full access to all modules. |
+| **SALES**     | `sales@fundsroom.com`        | `Sales@123`     | Can manage customers and create challans. |
+| **WAREHOUSE** | `warehouse@fundsroom.com`    | `Warehouse@123` | Can manage products and inventory stock. |
+| **ACCOUNTS**  | `accounts@fundsroom.com`     | `Accounts@123`  | Read-only access to sales, full access to invoices. |
+
+---
+
+## 📮 API Testing with Postman
+
+A complete, verified Postman collection is included in the project:
+- **Collection:** [`Nexus_ERP_API.postman_collection.json`](Nexus_ERP_API.postman_collection.json)
+- **Local Environment:** [`postman/environments/Nexus ERP - Local Environment.environment.yaml`](postman/environments/)
+- **Production Environment:** [`postman/environments/Nexus ERP - Production Environment.environment.yaml`](postman/environments/)
+
+### Quick Start in Postman:
+1. In Postman, press `Ctrl + O` and select `Nexus_ERP_API.postman_collection.json`.
+2. Select **Nexus ERP - Local Environment**.
+3. Run the collection to verify all 24 endpoints.
+
+---
+
 # 🌍 Deployment Architecture
 
 The production deployment uses separate frontend and backend services.
 
-```text
-                         Internet
-                            │
-                            ▼
-              ┌──────────────────────────┐
-              │          Vercel          │
-              │                          │
-              │      React Frontend      │
-              └────────────┬─────────────┘
-                           │
-                       HTTPS / API
-                           │
-                           ▼
-              ┌──────────────────────────┐
-              │          Render          │
-              │                          │
-              │    Node.js + Express     │
-              │        Backend           │
-              └────────────┬─────────────┘
-                           │
-                           │ Database Connection
-                           ▼
-              ┌──────────────────────────┐
-              │      MongoDB Atlas       │
-              │                          │
-              │     Application Data     │
-              └──────────────────────────┘
-```
-
 ### Production Services
 
-**Frontend**
-
-https://nexus-erp-blush.vercel.app/
-
-**Backend**
-
-https://nexus-erp-ug4w.onrender.com/
+- **Frontend:** https://nexus-erp-blush.vercel.app/
+- **Backend:** https://nexus-erp-ug4w.onrender.com/
 
 ---
 
@@ -510,22 +495,6 @@ Potential future improvements include:
 
 ---
 
-# 📸 Screenshots
-
-Add application screenshots here:
-
-```markdown
-![Dashboard](./screenshots/dashboard.png)
-
-![CRM](./screenshots/crm.png)
-
-![Inventory](./screenshots/inventory.png)
-
-![Sales](./screenshots/sales.png)
-```
-
----
-
 # 🤝 Contribution
 
 Contributions are welcome.
@@ -565,8 +534,5 @@ Full Stack Developer | MERN Stack | DSA
 
 If you find this project useful, consider giving the repository a ⭐ on GitHub.
 
-**Live Application:**
-https://nexus-erp-blush.vercel.app/
-
-**Backend API:**
-https://nexus-erp-ug4w.onrender.com/
+- **Live Application:** https://nexus-erp-blush.vercel.app/
+- **Backend API:** https://nexus-erp-ug4w.onrender.com/

@@ -1,0 +1,19 @@
+$kind: http-request
+description: "Add Customer Follow-up"
+url: "{{baseUrl}}/customers/{{customerId}}/followups"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "note": "Client requested detailed quote for next shipment",
+      "followUpDate": "2026-08-25T10:00:00.000Z"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200 or 201", function () { pm.expect([200, 201]).to.include(pm.response.code); });
+    language: text/javascript
+order: 5000

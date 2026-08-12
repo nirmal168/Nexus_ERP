@@ -1,0 +1,20 @@
+$kind: http-request
+description: "Update Customer"
+url: "{{baseUrl}}/customers/{{customerId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customerName": "Acme Global Industries Ltd",
+      "status": "ACTIVE",
+      "customerType": "DISTRIBUTOR"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () { pm.response.to.have.status(200); });
+    language: text/javascript
+order: 4000

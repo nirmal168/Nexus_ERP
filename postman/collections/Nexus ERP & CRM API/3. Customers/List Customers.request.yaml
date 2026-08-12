@@ -1,0 +1,14 @@
+$kind: http-request
+description: "List Customers"
+url: "{{baseUrl}}/customers"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () { pm.response.to.have.status(200); });
+      var res = pm.response.json();
+      if (res.data.length > 0 && !pm.collectionVariables.get("customerId")) {
+          pm.collectionVariables.set("customerId", res.data[0].id);
+      }
+    language: text/javascript
+order: 2000

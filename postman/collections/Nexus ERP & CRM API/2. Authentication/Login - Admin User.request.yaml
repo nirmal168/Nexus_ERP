@@ -1,0 +1,25 @@
+$kind: http-request
+description: "Login - Admin User"
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "admin@fundsroom.com",
+      "password": "Admin@123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () { pm.response.to.have.status(200); });
+      var res = pm.response.json();
+      pm.collectionVariables.set("adminToken", res.data.token);
+      pm.collectionVariables.set("authToken", res.data.token);
+      if (pm.environment) pm.environment.set("authToken", res.data.token);
+    language: text/javascript
+order: 4000

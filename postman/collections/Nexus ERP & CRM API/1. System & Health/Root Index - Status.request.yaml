@@ -1,0 +1,13 @@
+$kind: http-request
+description: "Root endpoint displaying API welcome and routes"
+url: "{{rootUrl}}/"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () { pm.response.to.have.status(200); });
+      pm.test("Service operational", function () { pm.expect(pm.response.json().success).to.be.true; });
+    language: text/javascript
+order: 1000

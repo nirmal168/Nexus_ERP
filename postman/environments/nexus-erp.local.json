@@ -1,0 +1,30 @@
+name: Nexus ERP - Local Environment
+values:
+  - key: baseUrl
+    value: 'http://localhost:5000/api'
+  - key: rootUrl
+    value: 'http://localhost:5000'
+  - key: authToken
+    value: ''
+  - key: adminEmail
+    value: admin@fundsroom.com
+  - key: adminPassword
+    value: Admin@123
+  - key: salesEmail
+    value: sales@fundsroom.com
+  - key: salesPassword
+    value: Sales@123
+  - key: warehouseEmail
+    value: warehouse@fundsroom.com
+  - key: warehousePassword
+    value: Warehouse@123
+  - key: accountsEmail
+    value: accounts@fundsroom.com
+  - key: accountsPassword
+    value: Accounts@123
+  - key: customerId
+    value: ''
+  - key: productId
+    value: ''
+  - key: challanId
+    value: ''

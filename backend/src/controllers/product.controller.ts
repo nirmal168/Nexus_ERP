@@ -168,7 +168,7 @@ export async function uploadProductImage(req: Request, res: Response, next: Next
 
 export async function getProductImage(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const filename = req.query.filename as string;
+    const filename = (req.query.filename || req.query.key) as string;
     if (!filename) {
       throw createError("Filename is required", 400);
     }

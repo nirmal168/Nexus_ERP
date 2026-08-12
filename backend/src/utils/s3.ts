@@ -28,12 +28,17 @@ export const uploadToS3 = async (filename: string, buffer: Buffer, contentType: 
 };
 
 export const getFromS3 = async (filename: string, expiresIn = 600): Promise<string> => {
-  return await getSignedUrl(
-    s3,
-    new GetObjectCommand({
-      Bucket: env.AWS_BUCKET_NAME,
-      Key: filename,
-    }),
-    { expiresIn }
-  );
+  try {
+    return await getSignedUrl(
+      s3,
+      new GetObjectCommand({
+        Bucket: env.AWS_BUCKET_NAME || "nexus-erp-storage",
+        Key: filename,
+      }),
+      { expiresIn }
+    );
+  } catch (err) {
+    // Graceful fallback for local development without active AWS credentials
+    return `https://${env.AWS_BUCKET_NAME || "nexus-storage"}.s3.amazonaws.com/${filename}`;
+  }
 };

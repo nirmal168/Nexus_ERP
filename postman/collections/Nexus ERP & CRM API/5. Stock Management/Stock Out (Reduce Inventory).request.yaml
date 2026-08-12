@@ -1,0 +1,20 @@
+$kind: http-request
+description: "Stock Out (Reduce Inventory)"
+url: "{{baseUrl}}/stock/out"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "productId": "{{productId}}",
+      "quantity": 5,
+      "reason": "Quality assurance test unit dispatch"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 201 or 200", function () { pm.expect([200, 201]).to.include(pm.response.code); });
+    language: text/javascript
+order: 2000

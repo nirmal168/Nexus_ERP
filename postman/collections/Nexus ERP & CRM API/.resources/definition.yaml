@@ -1,0 +1,44 @@
+$kind: collection
+name: Nexus ERP & CRM API
+description: |-
+  # Nexus ERP & CRM Operations Portal API
+
+  A comprehensive API collection for Nexus ERP & CRM Operations Portal.
+
+  ### Authentication
+  - Authenticate via `POST /api/auth/login` to obtain a JWT Bearer token.
+  - The login requests automatically save the returned JWT token to the `{{authToken}}` variable.
+  - All authenticated endpoints inherit the Bearer token configured at the collection level.
+
+  ### User Roles & Permissions
+  | Role | Email | Password | Permissions |
+  |---|---|---|---|
+  | **ADMIN** | `admin@fundsroom.com` | `Admin@123` | Full access across all modules |
+  | **SALES** | `sales@fundsroom.com` | `Sales@123` | Manage customers, create/manage challans, view products |
+  | **WAREHOUSE** | `warehouse@fundsroom.com` | `Warehouse@123` | Manage products, stock in/out, view movements |
+  | **ACCOUNTS** | `accounts@fundsroom.com` | `Accounts@123` | View customers, products, challans, mark paid, download PDFs |
+variables:
+  baseUrl: http://localhost:5000/api
+  rootUrl: http://localhost:5000
+  authToken: ""
+  adminToken: ""
+  salesToken: ""
+  warehouseToken: ""
+  accountsToken: ""
+  customerId: ""
+  productId: ""
+  challanId: ""
+  adminEmail: admin@fundsroom.com
+  adminPassword: Admin@123
+  salesEmail: sales@fundsroom.com
+  salesPassword: Sales@123
+  warehouseEmail: warehouse@fundsroom.com
+  warehousePassword: Warehouse@123
+  accountsEmail: accounts@fundsroom.com
+  accountsPassword: Accounts@123
+auth:
+  - id: bearer-auth
+    type: bearer
+    name: Bearer Auth
+    credentials:
+      token: "{{authToken}}"
