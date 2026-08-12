@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, AlertTriangle, Upload, X } from 'lucide-react';
+import { Plus, Search, AlertTriangle, Upload, X, Package } from 'lucide-react';
 import { productService } from '../../services/product.service';
 import type { Product } from '../../types/product.types';
 import { Button } from '../../components/common/Button';
@@ -231,34 +231,28 @@ export function Products() {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200">
-                          {p.imageUrl ? (
-                            imageUrls[key] ? (
-                              <img
-                                src={imageUrls[key]}
-                                alt={p.productName}
-                                className="h-full w-full object-cover"
-                                onError={() => {
-                                  console.error('IMAGE LOAD FAILED:', {
-                                    imageKey: key,
-                                    imageUrl: imageUrls[key],
-                                  });
-                                }}
-                              />
-                            ) : imageLoading[key] ? (
-                              <div className="flex h-full w-full items-center justify-center text-xs text-slate-500">
-                                Loading...
-                              </div>
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-xs text-slate-500">
-                                Loading...
-                              </div>
-                            )
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-xs text-slate-500">
-                              No image
-                            </div>
-                          )}
+                        <div className="h-12 w-12 overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center">
+                          {(() => {
+                            const src = (key && (key.startsWith('http') || key.startsWith('data:'))) 
+                              ? key 
+                              : (imageUrls[key] || '');
+                            if (src) {
+                              return (
+                                <img
+                                  src={src}
+                                  alt={p.productName}
+                                  className="h-full w-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                              );
+                            }
+                            if (imageLoading[key]) {
+                              return <div className="text-xs text-slate-400">Loading...</div>;
+                            }
+                            return <Package className="h-5 w-5 text-slate-400" />;
+                          })()}
                         </div>
                         <span className="font-medium text-gray-900">{p.productName}</span>
                       </div>

@@ -8,7 +8,7 @@ import { validateStockMovement } from "../validators/stock.validator.js";
 const router = Router();
 router.use(authenticate);
 
-router.get("/movements", authorizeRoles("ADMIN", "WAREHOUSE", "ACCOUNTS"), listMovementsController);
+router.get("/movements", authorizeRoles("ADMIN", "WAREHOUSE", "SALES", "ACCOUNTS"), listMovementsController);
 router.post("/in", authorizeRoles("ADMIN", "WAREHOUSE"), validate(validateStockMovement), stockInController);
 router.post("/out", authorizeRoles("ADMIN", "WAREHOUSE"), validate(validateStockMovement), stockOutController);
 

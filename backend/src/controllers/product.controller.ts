@@ -20,11 +20,13 @@ export async function list(req: Request, res: Response, next: NextFunction): Pro
     const dataWithUrls = await Promise.all(
       result.data.map(async (p: any) => {
         if (p.imageUrl) {
+          if (p.imageUrl.startsWith("data:") || p.imageUrl.startsWith("http://") || p.imageUrl.startsWith("https://")) {
+            return p;
+          }
           try {
             const url = await getFromS3(p.imageUrl, 3600);
             return { ...p, imageUrl: url };
           } catch (e) {
-            // If presign fails, return original record (frontend can handle missing image)
             return p;
           }
         }
@@ -41,13 +43,16 @@ export async function getById(req: Request, res: Response, next: NextFunction): 
     const id = req.params["id"] as string;
     const product = await productService.getProduct(id);
     if (product && product.imageUrl) {
+      if (product.imageUrl.startsWith("data:") || product.imageUrl.startsWith("http://") || product.imageUrl.startsWith("https://")) {
+        sendSuccess(res, product);
+        return;
+      }
       try {
         const url = await getFromS3(product.imageUrl, 3600);
-        // send product with imageUrl replaced by presigned URL for frontend
         sendSuccess(res, { ...product, imageUrl: url });
         return;
       } catch (e) {
-        // ignore presign errors and fallthrough to send product as-is
+        // fallthrough
       }
     }
     sendSuccess(res, product);
@@ -136,31 +141,37 @@ export async function uploadProductImage(req: Request, res: Response, next: Next
       contentType: file.mimetype,
     });
 
-    try {
-      await uploadToS3(filename, file.buffer, file.mimetype);
-      console.log("S3 upload SUCCESS:", filename);
-    } catch (uploadErr) {
-      console.error('S3 upload ERROR for', filename, uploadErr);
-      throw uploadErr;
+    let storedImageUrl = filename;
+    let clientImageUrl = filename;
+
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.AWS_BUCKET_NAME) {
+      try {
+        await uploadToS3(filename, file.buffer, file.mimetype);
+        console.log("S3 upload SUCCESS:", filename);
+        storedImageUrl = filename;
+        try {
+          clientImageUrl = await getFromS3(filename, 3600);
+        } catch {
+          clientImageUrl = filename;
+        }
+      } catch (uploadErr) {
+        console.warn("S3 upload failed, falling back to base64 data URI:", uploadErr);
+        storedImageUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+        clientImageUrl = storedImageUrl;
+      }
+    } else {
+      console.log("No AWS S3 credentials configured, saving image as Base64 Data URL in database");
+      storedImageUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+      clientImageUrl = storedImageUrl;
     }
 
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data: { imageUrl: filename },
+      data: { imageUrl: storedImageUrl },
     });
 
-    // Generate presigned URL for immediate frontend use (keep DB value as the key)
-    try {
-      const presignedUrl = await getFromS3(filename, 3600);
-      console.log(presignedUrl)
-      const productForClient = { ...updatedProduct, imageUrl: presignedUrl };
-      sendSuccess(res, { imageUrl: filename, presignedUrl, product: productForClient });
-      return;
-    } catch (e) {
-      // If presign fails, still return the key and product
-      sendSuccess(res, { imageUrl: filename, product: updatedProduct });
-      return;
-    }
+    const productForClient = { ...updatedProduct, imageUrl: clientImageUrl };
+    sendSuccess(res, { imageUrl: storedImageUrl, presignedUrl: clientImageUrl, product: productForClient });
   } catch (err) {
     next(err);
   }
